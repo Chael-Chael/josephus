@@ -69,4 +69,8 @@ TNode *deleteNode( TNode *Tree ){
 }
 
 int josephus(int n, int k){
- 
+    int* list = (int*)malloc(sizeof(int) * n);
+    TNode* root = CreateTree(1, n, NULL);
+    TNode* Tree = root;
+    
+    for(int
