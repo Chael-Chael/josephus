@@ -20,6 +20,8 @@ void initList(List* l, int n);
 void insert(List* l, int position, int code);
 int removeElem(List *l, int position);
 void josephus(int k, List *l);
+void findDir(int k, int size);
+int dir = 1;
 
 int main() 
 {
@@ -93,6 +95,18 @@ int removeElem(List* l, int position)
     return delElem;
 }
 
+void findDir(int k, int size)
+{
+    if ( (k - 1) > size / 2 )
+    {
+        dir = -1;
+    }
+    else if ((k - 1) <= size / 2)
+    {
+        dir = 1;
+    }   
+} 
+
 void josephus(int k, List *l)
 {
     while (l->remaining > 1 )
@@ -103,14 +117,16 @@ void josephus(int k, List *l)
         if ( k == 0 ){
             k = l->remaining;
         }
-             
+        
+        findDir(k);
+                 
         while (count < k)
         {
             if (l->list[l->ptr].isOut == 0)
             {
                 count++;
             }
-            l->ptr = (l->ptr + 1) % l->size; //move to the next
+            l->ptr = (l->ptr + dir + l->size) % l->size; //move to the next
         }
 
         printf("Person %d is out\n", (l->ptr + l->size - 1) % l->size + 1);

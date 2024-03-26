@@ -73,15 +73,16 @@ void josephus(int n, int k)
     while (ptr1->next != ptr1) 
     {
         count = count % remaining;
-        if (count == 0) 
+        if ( count == 0 )
         {
-            count = remaining;
-        }
+            count == remaining;
+        } 
 
-        while (count-- != 1)
+        while (count != 0)
         {
             ptr2 = ptr1;
             ptr1 = ptr1->next;
+            count --;
         } 
 
         printf("Person %d is out\n", ptr1->data);  
