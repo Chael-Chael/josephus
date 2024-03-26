@@ -4,6 +4,7 @@
 
 typedef struct BCTree{
     int code;
+    int serial;
     int count;
     struct BCTree *L;
     struct BCTree *R;
@@ -73,4 +74,12 @@ int josephus(int n, int k){
     TNode* root = CreateTree(1, n, NULL);
     TNode* Tree = root;
     
-    for(int
+    for(int size = n; size > 1; size ++){
+        k = (k - 1) % size;
+        Tree = search(Tree, k);
+        printf("Person %d is out", Tree->serial);
+        k = Tree->code;
+        Tree = deleteNode(Tree); 
+    }
+    
+    printf("Last person standing is %d", Tree->data);
