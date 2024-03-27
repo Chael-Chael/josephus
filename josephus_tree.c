@@ -29,79 +29,79 @@ TNode *CreateTree( int low, int high,TNode* Parent){
     }       
 }
 
-TNode *search( TNode *Tree, int count){
+TNode *search( TNode *TreeNode, int count){
     if ( count == 0 ){
-        return Tree;    //find target
+        return TreeNode;    //find target
     }
     
-    int rightCount = (Tree->R)->count;
-    int leftCount = (Tree->L)->count;
-    int rightLeftCount = ((Tree->R)->L)->count;
-    int leftRightCount = ((Tree->L)->R)->count;
+    int rightCount = (TreeNode->R)->count;
+    int leftCount = (TreeNode->L)->count;
+    int rightLeftCount = ((TreeNode->R)->L)->count;
+    int leftRightCount = ((TreeNode->L)->R)->count;
     
     if ( 0 < count && count <= rightCount)
     {
-        Tree = Tree->R;
+        TreeNode = TreeNode->R;
         count = count - (rightLeftCount + 1);
     }
     else{
-        if( Tree->P != NULL){
-            if ( (Tree->P)->L == Tree ){
-                Tree = Tree->P;
+        if( TreeNode->P != NULL){
+            if ( (TreeNode->P)->L == TreeNode ){
+                TreeNode = TreeNode->P;
                 count = count - (rightCount + 1);
             }
             else{
-                Tree = Tree->P;
+                TreeNode = TreeNode->P;
                 count = count + (leftCount + 1);
             }
         }
         else{
             if (count > 0){
-                count = count - Tree->count;
+                count = count - TreeNode->count;
             }
             else if (count < 0){
-                count = count + Tree->count;
+                count = count + TreeNode->count;
             }
         }
     }            
-    return search(Tree, count);
+    return search(TreeNode, count);
 }
 
-TNode *deleteNode( TNode *Tree ){
-    TNode *Parent = Tree->P;
-    TNode *Left = Tree->L;
-    TNode *Right = Tree->R;
+TNode *deleteNode( TNode *TreeNode){
+    TNode *Parent = TreeNode->P;
+    TNode *Left = TreeNode->L;
+    TNode *Right = TreeNode->R;
     
     if (Left == NULL && Right == NULL){
-        if (Parent->L == Tree){
+        if (Parent->L == TreeNode){
             Parent->L = NULL;
         }
         else{
             Parent->R = NULL;
         }
-        free(Tree);
+        free(TreeNode);
         return Parent;
     }
     else if (Left == NULL){
-        if (Parent->L == Tree){
+        if (Parent->L == TreeNode){
             Parent->L = Right;
         }
         else{
             Parent->R = Right;
         }
         Right->P = Parent;
-        free(Tree);
+        free(TreeNode);
         return Right;
     }
     else if (Right == NULL){
-        if (Parent->L == Tree){
+        if (Parent->L == TreeNode){
             Parent->L = Left;
         }
         else{
             Parent->R = Left;
         }
         Left->P = Parent;
-        free(Tree);
+        free(TreeNode);
         return Left;
     }
     else{
@@ -109,25 +109,25 @@ TNode *deleteNode( TNode *Tree ){
         while (Temp->L != NULL){
             Temp = Temp->L;
         }
-        Tree->data = Temp->data;
-        Tree->code = Temp->code;
-        Tree->serial = Temp->serial;
-        Tree->R = deleteNode(Temp);
-        return Tree;
+        TreeNode->data = Temp->data;
+        TreeNode->code = Temp->code;
+        TreeNode->serial = Temp->serial;
+        TreeNode->R = deleteNode(Temp);
+        return TreeNode;
     }
 }
 
 int josephus(int n, int k){
     int* list = (int*)malloc(sizeof(int) * n);
     TNode* root = CreateTree(1, n, NULL);
-    TNode* Tree = root;
+    TNode* TreeNode = root;
     
     for(int size = n; size > 1; size ++){
         k = (k - 1) % size;
-        Tree = search(Tree, k);
-        printf("Person %d is out", Tree->serial);
-        k = Tree->code;
-        Tree = deleteNode(Tree); 
+        TreeNode = search(TreeNode, k);
+        printf("Person %d is out", TreeNode->serial);
+        k = TreeNode->code;
+        TreeNode = deleteNode(TreeNode); 
     }
     
-    printf("Last person standing is %d", Tree->data);
+    printf("Last person standing is %d", TreeNode->data);
