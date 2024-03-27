@@ -3,6 +3,7 @@
 #include <time.h>
 
 typedef struct BCTree{
+    int data;
     int code;
     int serial;
     int count;
@@ -29,7 +30,7 @@ TNode *CreateTree( int low, int high,TNode* Parent){
 }
 
 TNode *search( TNode *Tree, int count){
-    if ( k == 0 ){
+    if ( count == 0 ){
         return Tree;    //find target
     }
     
@@ -38,10 +39,10 @@ TNode *search( TNode *Tree, int count){
     int rightLeftCount = ((Tree->R)->L)->count;
     int leftRightCount = ((Tree->L)->R)->count;
     
-    if ( 0 < k && k <= rightCount)
+    if ( 0 < count && count <= rightCount)
     {
         Tree = Tree->R;
-        k = k - (rightLeftCount + 1);
+        count = count - (rightLeftCount + 1);
     }
     else{
         if( Tree->P != NULL){
@@ -67,6 +68,53 @@ TNode *search( TNode *Tree, int count){
 }
 
 TNode *deleteNode( TNode *Tree ){
+    TNode *Parent = Tree->P;
+    TNode *Left = Tree->L;
+    TNode *Right = Tree->R;
+    
+    if (Left == NULL && Right == NULL){
+        if (Parent->L == Tree){
+            Parent->L = NULL;
+        }
+        else{
+            Parent->R = NULL;
+        }
+        free(Tree);
+        return Parent;
+    }
+    else if (Left == NULL){
+        if (Parent->L == Tree){
+            Parent->L = Right;
+        }
+        else{
+            Parent->R = Right;
+        }
+        Right->P = Parent;
+        free(Tree);
+        return Right;
+    }
+    else if (Right == NULL){
+        if (Parent->L == Tree){
+            Parent->L = Left;
+        }
+        else{
+            Parent->R = Left;
+        }
+        Left->P = Parent;
+        free(Tree);
+        return Left;
+    }
+    else{
+        TNode *Temp = Right;
+        while (Temp->L != NULL){
+            Temp = Temp->L;
+        }
+        Tree->data = Temp->data;
+        Tree->code = Temp->code;
+        Tree->serial = Temp->serial;
+        Tree->R = deleteNode(Temp);
+        return Tree;
+    }
 }
 
 int josephus(int n, int k){
