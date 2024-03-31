@@ -134,7 +134,7 @@ void josephus(int k, List *l)
         }
         
         findDir(k, l->size);
-                 
+
         while (count < k)
         {
             if (l->list[l->ptr].isOut == 0)

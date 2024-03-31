@@ -200,14 +200,10 @@ void *deleteNode( TNode *TreeNode ){
     }
 }
 
-void josephus(int n, int k){
-    int* list = (int*)malloc(sizeof(int) * n);
-    TNode* root = CreateTree(1, n, NULL);
+void josephus(int n, int k, TNode* root){
     TNode* TreeNode;
     TNode* FirstNode;
     TNode* NextTNode;
-
-    showTree(root);
 
     k = k % n - (1 + n) / 2;
     FirstNode= step(root, k);
@@ -219,9 +215,6 @@ void josephus(int n, int k){
         k = k % size;
         if (k == 0){
             k = size;
-        }
-        else {
-            k =  k;
         }
         NextTNode = step(TreeNode, k);
         deleteNode(TreeNode);
@@ -253,8 +246,12 @@ int main(){
     {
         clock_t start, end;
         double cpu_time_used;
+
+        TNode* root = CreateTree(1, n, NULL);
+        showTree(root);
+
         start = clock();
-        josephus(n, k);
+        josephus(n, k, root);
         end = clock();
         cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
         printf("\nProgram took %f seconds to execute \n", cpu_time_used);

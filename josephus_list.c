@@ -15,8 +15,8 @@ typedef struct Node{
 // } List;
 
 Node* createNode(int data, int code);
-void josephus(int n, int k);
-Node* josephus_recursion(int n, int k);
+void josephus(int n, int k, Node* head);
+void createList(int n, Node* head);
 void showList(int n, Node* head);
 
 int main() 
@@ -38,8 +38,13 @@ int main()
     {
     clock_t start, end;
     double cpu_time_used;
+
+    Node* head = createNode(1, rand() % 20 + 1);
+    createList(n, head);
+    showList(n, head);
+
     start = clock();
-    josephus(n, k);
+    josephus(n, k, head);
     end = clock();
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
     printf("Program took %f seconds to execute \n", cpu_time_used);
@@ -71,19 +76,19 @@ void showList(int n, Node* head)
     }
 }
 
-void josephus(int n, int k) 
+void createList(int n, Node* head) 
 {
-    Node *head = createNode(1, rand() % 20 + 1);
-    Node *prev = head;
+    Node* prev = head;
     for (int i = 2; i <= n; i++) 
     {
         prev->next = createNode(i, rand() % 20 + 1);
         prev = prev->next;
     }
-
-    showList(n, head);
-    
     prev->next = head;
+}
+
+void josephus(int n, int k, Node* head) 
+{
     Node *ptr1 = head, *ptr2 = head;
     
     int remaining = n;
