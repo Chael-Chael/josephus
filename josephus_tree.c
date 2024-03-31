@@ -134,6 +134,7 @@ void *deleteNode( TNode *TreeNode ){
         else{
             Parent->R = NULL;
         }
+        free(TreeNode);
         TreeNode = NULL;
     }
     else if (Left == NULL){
@@ -151,6 +152,7 @@ void *deleteNode( TNode *TreeNode ){
             Parent->R = Right;
         }
         Right->P = Parent;
+        free(TreeNode);
         TreeNode = NULL;
     }
     else if (Right == NULL){
@@ -168,6 +170,7 @@ void *deleteNode( TNode *TreeNode ){
             Parent->R = Left;
         }
         Left->P = Parent;
+        free(TreeNode);
         TreeNode = NULL;
     }
     else{
@@ -192,6 +195,7 @@ void *deleteNode( TNode *TreeNode ){
             temp2->P->R = temp2->R;
         }
 
+        free(temp2);
         temp2 = NULL;
     }
 }
@@ -215,10 +219,10 @@ int josephus(int n, int k){
     for(int size = n - 1; size > 1; size --){
         k = k % size;
         if (k == 0){
-            k = size - 1;
+            k = size;
         }
         else {
-            k =  k - 1;
+            k =  k;
         }
         NextTNode = step(TreeNode, k);
         deleteNode(TreeNode);
