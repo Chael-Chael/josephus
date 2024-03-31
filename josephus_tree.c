@@ -200,7 +200,7 @@ void *deleteNode( TNode *TreeNode ){
     }
 }
 
-int josephus(int n, int k){
+void josephus(int n, int k){
     int* list = (int*)malloc(sizeof(int) * n);
     TNode* root = CreateTree(1, n, NULL);
     TNode* TreeNode;
