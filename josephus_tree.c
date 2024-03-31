@@ -214,7 +214,6 @@ int josephus(int n, int k){
     printf("Person %d is out\n", FirstNode->serial);
     k = FirstNode->code;
     TreeNode = FirstNode;
-    deleteNode(FirstNode);
 
     for(int size = n - 1; size > 1; size --){
         k = k % size;
@@ -229,10 +228,12 @@ int josephus(int n, int k){
         printf("Person %d is out\n", NextTNode->serial);
         k = NextTNode->code;
         TreeNode = NextTNode;
-        printf("Remaining %d people\n", size - 1);
+        //printf("Remaining %d people\n", size - 1);
     }
-    
-    printf("Last person standing is %d", TreeNode->serial);
+
+    NextTNode = step(TreeNode, 1);
+    deleteNode(TreeNode);
+    printf("Last person standing is %d", NextTNode->serial);
 }
 
 int main(){
