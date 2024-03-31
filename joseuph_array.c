@@ -20,6 +20,7 @@ void initList(List* l, int n);
 void insert(List* l, int position, int code);
 int removeElem(List *l, int position);
 void josephus(int k, List *l);
+void showList(int n, List* l);
 
 int main() 
 {
@@ -27,7 +28,11 @@ int main()
     int initialK ;
     List* l;
 
-    scanf("%d %d", &n, &initialK);
+    printf("Enter the value of n: ");
+    scanf("%d", &n);
+    printf("Enter the value of initialK: ");
+    scanf("%d", &initialK);
+
     if( n  <1 || initialK < 1 )
     {
         printf("Invalid input\n");
@@ -41,8 +46,9 @@ int main()
     initList(l, n);
     for (int i = 0; i < n; i++)
     {
-        insert(l, i, i + 1);//rand() % 10 + 1);
+        insert(l, i, rand()%20 + 1);//rand() % 10 + 1);
     }
+    showList(n, l);
 
     start = clock();
     josephus(initialK, l);
@@ -93,12 +99,20 @@ int removeElem(List* l, int position)
     return delElem;
 }
 
+void showList(int n, List* l)
+{
+    for (int i = 0; i < n; i++)
+    {
+        printf("Person %d has code %d\n", i + 1, l->list[i].code);
+    }
+}
+
 void josephus(int k, List *l)
 {
+    int sum = l->size * (l->size + 1) / 2;
     while (l->remaining > 1 )
     {
         int count = 0;
-        
         k = k % l->remaining;
         if ( k == 0 ){
             k = l->remaining;
@@ -114,11 +128,12 @@ void josephus(int k, List *l)
         }
 
         printf("Person %d is out\n", (l->ptr + l->size - 1) % l->size + 1);
+        sum -= (l->ptr + l->size - 1) % l->size + 1;
         l->remaining--;
         k = removeElem(l, (l->ptr + l->size - 1) % l->size);
     }
 
-    printf("Last person standing is %d\n", l->list[l->ptr].code);
+    printf("Last person standing is %d\n", sum);
 
 }
 

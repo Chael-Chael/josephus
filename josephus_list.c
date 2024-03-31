@@ -17,12 +17,18 @@ typedef struct Node{
 Node* createNode(int data, int code);
 void josephus(int n, int k);
 Node* josephus_recursion(int n, int k);
+void showList(int n, Node* head);
 
 int main() 
 {
     int n ;
     int k ;
-    scanf("%d %d", &n, &k);
+
+    printf("Enter the value of n: ");
+    scanf("%d", &n);
+    printf("Enter the value of initialK: ");
+    scanf("%d", &k);
+
     if(n<1 || k<1)
     {
         printf("Invalid input\n");
@@ -55,15 +61,27 @@ Node* createNode(int data, int code)
     return newNode;
 }
 
+void showList(int n, Node* head) 
+{
+    Node* ptr = head;
+    for (int i = 0; i < n; i++) 
+    {
+        printf("Person %d has code %d\n", ptr->data, ptr->code);
+        ptr = ptr->next;
+    }
+}
+
 void josephus(int n, int k) 
 {
-    Node *head = createNode(1, 1);
+    Node *head = createNode(1, rand() % 20 + 1);
     Node *prev = head;
     for (int i = 2; i <= n; i++) 
     {
-        prev->next = createNode(i, i);
+        prev->next = createNode(i, rand() % 20 + 1);
         prev = prev->next;
     }
+
+    showList(n, head);
     
     prev->next = head;
     Node *ptr1 = head, *ptr2 = head;
@@ -73,10 +91,14 @@ void josephus(int n, int k)
     while (ptr1->next != ptr1) 
     {
         count = count % remaining;
-        if ( count == 0 )
+        if ( count  == 0 )
         {
-            count == remaining;
+            count = remaining - 1;
         } 
+        else
+        {
+            count = count - 1;
+        }
 
         while (count != 0)
         {
@@ -95,19 +117,4 @@ void josephus(int n, int k)
     }
 
     printf("Last person standing is %d\n", ptr1->data);
-}
-
-Node* josephus_recursion (int n, int k)
-{
-    if (n == 1)
-    {
-        printf("Last person standing is %d\n", person->data);
-        return;
-    }
-    else
-    {
-        int serial = (josephus_recursion(n - 1, k) + k - 1) % n + 1;
-        printf("Person %d is out\n", person->data);
-        return person;
-    }
 }
