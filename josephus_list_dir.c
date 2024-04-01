@@ -43,7 +43,7 @@ int main()
     clock_t start, end;
     double cpu_time_used;
     
-    Node* head = createNode(1, rand() % 20 + 1);
+    Node* head = createNode(1, rand() % n*3 + 1);
     createList(n, head);
     showList(n, head);
     
@@ -74,11 +74,11 @@ Node* createNode(int data, int code)
 
 void findDir(int k, int size)
 {
-    if ((k - 1) > size / 2 )
+    if (k > (size-1) / 2 )
     {
         dir = -1;
     }
-    else if ((k - 1) <= size / 2)
+    else if (k <= (size-1) / 2)
     {
         dir = 1;
     }   
@@ -99,7 +99,7 @@ void createList(int n, Node* head)
     Node* current = head;
     for (int i = 2; i <= n; i++) 
     {
-        current->next = createNode(i, rand() % 20 + 1);
+        current->next = createNode(i, rand() % n*3 + 1);
         (current->next)->prev = current;
         current = current->next;
     }
@@ -115,15 +115,7 @@ void josephus(int n, int k, Node* head)
     int count = k;
     while (ptr1->next != ptr1) 
     {
-        count = count % remaining;
-        if ( count == 0 )
-        {
-            count = remaining - 1;
-        }
-        else
-        {
-            count = count - 1;
-        }
+        count = (count - 1) % remaining;
         
         findDir(count, remaining);
 
@@ -142,7 +134,21 @@ void josephus(int n, int k, Node* head)
         printf("Person %d is out\n", ptr1->data);  
         count = ptr1->code;
         
-        // if(dir == 1){
+        if(dir == 1){
+            ptr2->next = ptr1->next;
+            ptr2->next->prev = ptr2;
+            free(ptr1);
+            remaining--;
+            ptr1 = ptr2->next;
+        }
+        else if(dir == -1){
+            ptr2->prev = ptr1->prev;
+            ptr2->prev->next = ptr2;
+            free(ptr1);
+            remaining--;
+            ptr1 = ptr2;
+            ptr2 = ptr1->prev;
+        }
         //     ptr1 = ptr1->next;
         // } 
         // else if(dir == - 1){
@@ -150,10 +156,6 @@ void josephus(int n, int k, Node* head)
         // }  
         
         // ptr2->prev = ptr1->prev;
-        ptr2->next = ptr1->next;
-        free(ptr1); 
-        remaining--;
-        ptr1 = ptr2->next;
         // ptr1 = ptr2->prev;
     }
 

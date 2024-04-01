@@ -39,7 +39,7 @@ int main()
     clock_t start, end;
     double cpu_time_used;
 
-    Node* head = createNode(1, rand() % 20 + 1);
+    Node* head = createNode(1, rand() % n*3 + 1);
     createList(n, head);
     showList(n, head);
 
@@ -81,7 +81,7 @@ void createList(int n, Node* head)
     Node* prev = head;
     for (int i = 2; i <= n; i++) 
     {
-        prev->next = createNode(i, rand() % 20 + 1);
+        prev->next = createNode(i, rand() % n*3 + 1);
         prev = prev->next;
     }
     prev->next = head;
@@ -95,15 +95,7 @@ void josephus(int n, int k, Node* head)
     int count = k;
     while (ptr1->next != ptr1) 
     {
-        count = count % remaining;
-        if ( count  == 0 )
-        {
-            count = remaining - 1;
-        } 
-        else
-        {
-            count = count - 1;
-        }
+        count = (count - 1) % remaining;
 
         while (count != 0)
         {

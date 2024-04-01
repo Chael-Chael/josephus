@@ -120,7 +120,7 @@ void *deleteNode( TNode *TreeNode ){
     TNode *Temp;
 
 
-    if (Left == NULL && Right == NULL){
+    if (Left == NULL && Right == NULL && Parent != NULL){
 
         TNode *currentNode = TreeNode;
         while (currentNode->P != NULL) {
@@ -155,7 +155,7 @@ void *deleteNode( TNode *TreeNode ){
         free(TreeNode);
         TreeNode = NULL;
     }
-    else if (Right == NULL){
+    else if (Right == NULL && Parent != NULL){
 
         TNode *currentNode = TreeNode;
         while (currentNode->P != NULL) {
