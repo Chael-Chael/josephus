@@ -74,11 +74,11 @@ Node* createNode(int data, int code)
 
 void findDir(int k, int size)
 {
-    if (k > (size-1) / 2 )
+    if (k > size / 2 )
     {
         dir = -1;
     }
-    else if (k <= (size-1) / 2)
+    else if (k <= size / 2)
     {
         dir = 1;
     }   
@@ -112,14 +112,19 @@ void josephus(int n, int k, Node* head)
     Node *ptr1 = head, *ptr2 = head;
     
     int remaining = n;
-    int count = k;
+    int steps_taken = k;
     while (ptr1->next != ptr1) 
     {
-        count = (count - 1) % remaining;
+        steps_taken = (steps_taken - 1) % remaining;
         
-        findDir(count, remaining);
+        findDir(steps_taken, remaining);
+        // printf("steps_taken = %d\n", steps_taken);
 
-        while (count != 0)
+        if (dir == -1){
+            steps_taken = remaining - steps_taken;
+        }
+
+        while (steps_taken != 0)
         {
             ptr2 = ptr1;
             if(dir == 1){
@@ -128,11 +133,12 @@ void josephus(int n, int k, Node* head)
             else if(dir == - 1){
                 ptr1 = ptr1-> prev;
             }   
-            count --;
+            steps_taken --;
         } 
 
+        // printf("dir = %d\n", dir);
         printf("Person %d is out\n", ptr1->data);  
-        count = ptr1->code;
+        steps_taken = ptr1->code;
         
         if(dir == 1){
             ptr2->next = ptr1->next;

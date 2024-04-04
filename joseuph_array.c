@@ -43,10 +43,11 @@ int main()
     clock_t start, end;
     double cpu_time_used;
 
+
     initList(l, n);
     for (int i = 0; i < n; i++)
     {
-        insert(l, i, rand()%20 + 1);//rand() % 10 + 1);
+        insert(l, i, rand()%(n*3) + 1);//rand() % 10 + 1);
     }
     showList(n, l);
 
@@ -117,7 +118,7 @@ void josephus(int k, List *l)
         if ( k == 0 ){
             k = l->remaining;
         }
-             
+        
         while (count < k)
         {
             if (l->list[l->ptr].isOut == 0)

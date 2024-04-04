@@ -5,11 +5,34 @@
 typedef struct BCTree {
     int serial; // 序号
     int code;   // 密码
-    int steps;  // 计数  
+    int count;  // 计数  
     struct BCTree* L;
     struct BCTree* R;
     struct BCTree* P;
 } TNode;
+
+void showNode(TNode* node){
+    printf("Node: %d\n", node->serial);
+    printf("Code: %d\n", node->code);
+    printf("Steps: %d\n", node->count);
+    if (node->L != NULL) {
+        printf("Left Child: %d\n", node->L->serial);
+    } else {
+        printf("Left Child: NULL\n");
+    }
+    if (node->R != NULL) {
+        printf("Right Child: %d\n", node->R->serial);
+    } else {
+        printf("Right Child: NULL\n");
+    }
+    if (node->P != NULL) {
+        printf("Parent: %d\n", node->P->serial);
+    } else {
+        printf("Parent: NULL\n");
+    }
+    printf("\n");
+
+}
 
 void showTree(TNode* node) {
     if (node == NULL) {
@@ -18,7 +41,7 @@ void showTree(TNode* node) {
     
     printf("Node: %d\n", node->serial);
     printf("Code: %d\n", node->code);
-    printf("Steps: %d\n", node->steps);
+    printf("Steps: %d\n", node->count);
     
     if (node->L != NULL) {
         printf("Left Child: %d\n", node->L->serial);
@@ -49,8 +72,8 @@ TNode* CreateTree(int low, int high, TNode* Parent) {
         int mid = (low + high) / 2;
         TNode* Mid = (TNode*)malloc(sizeof(TNode));
         Mid->serial = mid;
-        Mid->code = rand() % 20 + 1;
-        Mid->steps = high - low + 1;
+        Mid->code = rand() % (3*high) + 1;
+        Mid->count = high - low + 1;
         Mid->L = CreateTree(low, mid - 1, Mid);
         Mid->R = CreateTree(mid + 1, high, Mid);
         Mid->P = Parent;
@@ -60,173 +83,170 @@ TNode* CreateTree(int low, int high, TNode* Parent) {
     }       
 }
 
-TNode* step(TNode* TreeNode, int steps) {
-    if (steps == 0) {
-        return TreeNode;    // find target
-    }
-    
+TNode* make_steps(TNode* CurrentNode, int count) {
     int rightsteps = 0;
     int leftsteps = 0;
     int rightLeftsteps = 0;
     int leftRightsteps = 0;
-    
-    if (TreeNode->R != NULL) {
-        rightsteps = TreeNode->R->steps;
+
+    if (count == 0) {
+        return CurrentNode;    // find target
+    }
+
+    if (CurrentNode->R != NULL) {
+        rightsteps = CurrentNode->R->count;
     }
     
-    if (TreeNode->L != NULL) {
-        leftsteps = TreeNode->L->steps;
+    if (CurrentNode->L != NULL) {
+        leftsteps = CurrentNode->L->count;
     }
     
-    if (TreeNode->R != NULL && TreeNode->R->L != NULL) {
-        rightLeftsteps = TreeNode->R->L->steps;
+    if (CurrentNode->R != NULL && CurrentNode->R->L != NULL) {
+        rightLeftsteps = CurrentNode->R->L->count;
     }
     
-    if (TreeNode->L != NULL && TreeNode->L->R != NULL) {
-        leftRightsteps = TreeNode->L->R->steps;
+    if (CurrentNode->L != NULL && CurrentNode->L->R != NULL) {
+        leftRightsteps = CurrentNode->L->R->count;
     }
     
-    if (0 < steps && steps <= rightsteps) {
-        TreeNode = TreeNode->R;
-        steps = steps - (rightLeftsteps + 1);
-    } else if (-leftsteps <= steps && steps < 0) {
-        TreeNode = TreeNode->L;
-        steps = steps + (leftRightsteps + 1);
+    if (0 < count && count <= rightsteps) {
+        CurrentNode = CurrentNode->R;
+        count = count - (rightLeftsteps + 1);
+    } else if (-leftsteps <= count && count < 0) {
+        CurrentNode = CurrentNode->L;
+        count = count + (leftRightsteps + 1);
     } else {
-        if (TreeNode->P != NULL) {
-            if (TreeNode->P->L == TreeNode) {
-                TreeNode = TreeNode->P;
-                steps = steps - (rightsteps + 1);
+        if (CurrentNode->P != NULL) {
+            if (CurrentNode->P->L == CurrentNode) {
+                CurrentNode = CurrentNode->P;
+                count = count - (rightsteps + 1);
             } else {
-                TreeNode = TreeNode->P;
-                steps = steps + (leftsteps + 1);
+                CurrentNode = CurrentNode->P;
+                count = count + (leftsteps + 1);
             }
         } else {
-            if (steps > 0) {
-                steps = steps - TreeNode->steps;
-            } else if (steps < 0) {
-                steps = steps + TreeNode->steps;
+            if (count > 0) {
+                count = count - CurrentNode->count;
+            } else if (count < 0) {
+                count = count + CurrentNode->count;
             }
         }
     }
-    
-    return step(TreeNode, steps);
+    return make_steps(CurrentNode, count);
 }
 
-void *deleteNode( TNode *TreeNode ){
-    TNode *Parent = TreeNode->P;
-    TNode *Left = TreeNode->L;
-    TNode *Right = TreeNode->R;
-    TNode *Temp;
+TNode* delNodeAndGetNext(TNode* Node){
+    TNode* parent = Node->P;
+    TNode* left = Node->L;
+    TNode* right = Node->R;
+    TNode* temp;
 
-
-    if (Left == NULL && Right == NULL && Parent != NULL){
-
-        TNode *currentNode = TreeNode;
-        while (currentNode->P != NULL) {
-            currentNode = currentNode->P;
-            currentNode->steps--;
-        }
-
-        if (Parent->L == TreeNode){
-            Parent->L = NULL;
-        }
-        else{
-            Parent->R = NULL;
-        }
-        free(TreeNode);
-        TreeNode = NULL;
+    if (Node == NULL) {
+        return NULL;
     }
-    else if (Left == NULL){
-        
-        TNode *currentNode = TreeNode;
-        while (currentNode->P != NULL) {
-            currentNode = currentNode->P;
-            currentNode->steps--;
+    else if (Node->L == NULL && Node->R == NULL) {
+        if (Node->P != NULL) {
+            if (Node->P->L == Node) {
+                Node->P->L = NULL;
+            } else {
+                Node->P->R = NULL;
+            }
         }
 
-        if (Parent->L == TreeNode){
-            Parent->L = Right;
+        for (TNode* i = Node; i != NULL; i = i->P) {
+            i->count--;
         }
-        else{
-            Parent->R = Right;
-        }
-        Right->P = Parent;
-        free(TreeNode);
-        TreeNode = NULL;
+
+        free(Node);
+        Node = NULL;
+        return parent;
     }
-    else if (Right == NULL && Parent != NULL){
-
-        TNode *currentNode = TreeNode;
-        while (currentNode->P != NULL) {
-            currentNode = currentNode->P;
-            currentNode->steps--;
+    else if (Node->L == NULL) {
+        Node->R->P = Node->P;
+        if (Node->P != NULL) {
+            if (Node->P->L == Node) {
+                Node->P->L = Node->R;
+            } else {
+                Node->P->R = Node->R;
+            }
         }
 
-        if (Parent->L == TreeNode){
-            Parent->L = Left;
+        for (TNode* i = Node; i != NULL; i = i->P) {
+            i->count--;
         }
-        else{
-            Parent->R = Left;
-        }
-        Left->P = Parent;
-        free(TreeNode);
-        TreeNode = NULL;
+
+        free(Node);
+        Node = NULL;
+        return right;
     }
-    else{
-        TNode *temp2 = Right;
-        while (temp2->L != NULL){
-            temp2 = temp2->L;
+    else if (Node->R == NULL) {
+        Node->L->P = Node->P;
+        if (Node->P != NULL) {
+            if (Node->P->L == Node) {
+                Node->P->L = Node->L;
+            } else {
+                Node->P->R = Node->L;
+            }
         }
 
-        TNode *currentNode = temp2;
-        while (currentNode->P != NULL) {
-            currentNode = currentNode->P;
-            currentNode->steps--;
-        }
-        
-        TreeNode->code = temp2->code;
-        TreeNode->serial = temp2->serial;
-
-        if (temp2->P->L == temp2){
-            temp2->P->L = temp2->R;
-        }
-        else{
-            temp2->P->R = temp2->R;
+        for (TNode* i = Node; i != NULL; i = i->P) {
+            i->count--;
         }
 
-        free(temp2);
-        temp2 = NULL;
+        free(Node);
+        Node = NULL;
+        return left;
+    }
+    else {
+        TNode* NextNode = Node->R;
+        while (NextNode->L != NULL) {
+            NextNode = NextNode->L;
+        }
+        Node->serial = NextNode->serial;
+        Node->code = NextNode->code;
+        temp = delNodeAndGetNext(NextNode);
+
+        while(!(temp->P == Node || temp == Node)){
+            temp = temp->P;
+        }
+
+        Node->R = temp;
+        return Node;
     }
 }
 
 void josephus(int n, int k, TNode* root){
-    TNode* TreeNode;
-    TNode* FirstNode;
-    TNode* NextTNode;
+    TNode* CurrentNode = root;
+    TNode* NextNode;
 
-    k = k % n - (1 + n) / 2;
-    FirstNode= step(root, k);
-    printf("Person %d is out\n", FirstNode->serial);
-    k = FirstNode->code;
-    TreeNode = FirstNode;
-
-    for(int size = n - 1; size > 1; size --){
-        k = k % size;
-        if (k == 0){
-            k = size;
-        }
-        NextTNode = step(TreeNode, k);
-        deleteNode(TreeNode);
-        printf("Person %d is out\n", NextTNode->serial);
-        k = NextTNode->code;
-        TreeNode = NextTNode;
-        //printf("Remaining %d people\n", size - 1);
+    while(CurrentNode->L != NULL){
+        CurrentNode = CurrentNode->L;
     }
 
-    NextTNode = step(TreeNode, 1);
-    deleteNode(TreeNode);
-    printf("Last person standing is %d", NextTNode->serial);
+    //printf("current node: %d\n", CurrentNode->serial); 
+    int size = n;
+
+    while(size > 1){
+        printf("k = %d\n", k);
+        k = (k - 1) % size;
+        printf("k_next = %d\n", k);
+        NextNode = make_steps(CurrentNode, k);
+        printf("Person %d is out\n", NextNode->serial);
+
+        k = NextNode->code;
+        printf("nextnode = %d\n", NextNode->serial);
+        if (NextNode->R == NULL && NextNode->L != NULL){
+            k++;
+            printf("yes...\n");
+        }
+
+        CurrentNode = delNodeAndGetNext(NextNode);
+        printf("current node: %d\n", CurrentNode->serial);
+        size --;
+
+    }
+
+    printf("The last person is %d\n", CurrentNode->serial);
 }
 
 int main(){
